@@ -1,0 +1,1574 @@
+<title>Iliya Ghamoushi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:ital,wght@0,400..700;1,400&display=swap">
+<style>
+/* Layout: a component datasheet split into pages. A tab bar switches views; the home view pairs the name with a working 16x2 LCD module on a perfboard, and projects open from cards. */
+:root {
+  --bg: #f1f4f0;
+  --surface: #ffffff;
+  --ink: #14201a;
+  --muted: #55645c;
+  --rule: #d2dbd4;
+  --chip: #e4ebe5;
+  --pcb: #1d5a3d;
+  --copper: #9c501c;
+  --ok: #1f7a46;
+
+  /* LCD module: one physical look in both themes */
+  --lcd-pcb: #1b6a45;
+  --lcd-gold: #c9a54e;
+  --lcd-bezel: #0b0e13;
+  --lcd-hi: #3c63ff;
+  --lcd-lo: #1b3bd1;
+  --lcd-on: #eef3ff;
+  --lcd-off: rgba(255, 255, 255, 0.085);
+  --lcd-glow: rgba(205, 222, 255, 0.75);
+  --switch-body: #1f242b;
+  --switch-cap: #3b414a;
+
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.1875rem;
+  --step-2: 1.5rem;
+  --step-3: clamp(1.9rem, 3.4vw, 2.5rem);
+  --step-4: clamp(2.7rem, 7vw, 5rem);
+
+  --wrap: 1160px;
+  --gutter: clamp(16px, 4vw, 40px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1511;
+    --surface: #151f19;
+    --ink: #e3ebe5;
+    --muted: #9cafa4;
+    --rule: #26342c;
+    --chip: #1c2922;
+    --pcb: #3c8d63;
+    --copper: #e2915a;
+    --ok: #4fc27f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1511;
+  --surface: #151f19;
+  --ink: #e3ebe5;
+  --muted: #9cafa4;
+  --rule: #26342c;
+  --chip: #1c2922;
+  --pcb: #3c8d63;
+  --copper: #e2915a;
+  --ok: #4fc27f;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+img { display: block; max-width: 100%; height: auto; }
+:focus-visible { outline: 2px solid var(--copper); outline-offset: 3px; border-radius: 3px; }
+
+.wrap { max-width: var(--wrap); margin-inline: auto; padding-inline: var(--gutter); }
+.mono { font-family: var(--font-mono); }
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- Header ---------- */
+.topbar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule);
+}
+.topbar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding-block: 10px; }
+.brand {
+  font-family: var(--font-display);
+  font-stretch: 112%;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+}
+.brand { margin-right: auto; }
+.tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs a { position: relative; text-decoration: none; font-size: 0.9375rem; color: var(--muted); padding: 8px 10px; border-radius: 6px; white-space: nowrap; }
+.tabs a:hover { color: var(--ink); background: var(--chip); }
+.tabs a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+.tabs a[aria-current="page"]::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: 2px; height: 2px; border-radius: 1px; background: var(--copper); }
+@media (max-width: 900px) {
+  .tabs { order: 3; width: calc(100% + 2 * var(--gutter)); margin-inline: calc(-1 * var(--gutter)); padding-inline: calc(var(--gutter) - 10px); }
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 500 0.9375rem/1 var(--font-body);
+  padding: 11px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--chip); }
+.btn.primary { background: var(--ink); color: var(--bg); }
+.btn.primary:hover { background: var(--pcb); border-color: var(--pcb); color: #fff; }
+.btn.small { padding: 8px 12px; font-size: 0.875rem; }
+.btn svg { width: 15px; height: 15px; flex: none; }
+
+/* ---------- Hero ---------- */
+.hero { padding-block: clamp(36px, 7vw, 84px) clamp(40px, 6vw, 72px); }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
+@media (max-width: 920px) { .hero-grid { grid-template-columns: minmax(0, 1fr); } }
+.hero-copy { min-width: 0; display: grid; gap: 22px; }
+.hero h1 {
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  font-weight: 850;
+  font-size: var(--step-4);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+.lede { font-size: var(--step-1); line-height: 1.55; max-width: 34em; margin: 0; }
+.status {
+  display: inline-flex; align-items: center; gap: 10px;
+  justify-self: start;
+  padding: 7px 12px 7px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.9375rem;
+}
+.status .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 22%, transparent); flex: none; }
+.facts { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 0; }
+.facts div { display: grid; gap: 1px; }
+.facts dt { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* ---------- LCD module ---------- */
+.bench {
+  min-width: 0;
+  margin: 0;
+  padding: clamp(18px, 3.5vw, 32px);
+  border-radius: 10px;
+  border: 1px solid var(--rule);
+  background-color: var(--surface);
+  background-image: radial-gradient(circle, var(--rule) 1.4px, transparent 1.6px);
+  background-size: 16px 16px;
+  background-position: 8px 8px;
+  display: grid;
+  gap: 16px;
+}
+.lcd-board {
+  position: relative;
+  background: var(--lcd-pcb);
+  border-radius: 5px;
+  padding: 26px 18px 18px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 14px 28px -16px rgba(0,0,0,0.55);
+}
+.lcd-board .hole {
+  position: absolute; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 0 0 0 2.5px var(--lcd-gold);
+}
+.hole.tl { top: 7px; left: 7px; } .hole.tr { top: 7px; right: 7px; }
+.hole.bl { bottom: 7px; left: 7px; } .hole.br { bottom: 7px; right: 7px; }
+.pins { position: absolute; top: 9px; left: 28px; display: flex; gap: 4px; }
+.pins i { width: 6px; height: 6px; background: var(--lcd-gold); border-radius: 1px; display: block; opacity: 0.9; }
+.bezel { background: var(--lcd-bezel); padding: 7px; border-radius: 3px; }
+#lcd {
+  display: block; width: 100%; max-width: 100%;
+  aspect-ratio: 101 / 23;
+  border-radius: 2px;
+  cursor: pointer;
+  touch-action: manipulation;
+  background: var(--lcd-lo);
+}
+.bench-controls { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.bench-controls .left { display: grid; gap: 4px; min-width: 0; flex: 1 1 220px; }
+.bench-controls p { margin: 0; font-size: 0.875rem; color: var(--muted); }
+.toggle {
+  justify-self: start;
+  font: 500 0.8125rem/1 var(--font-mono);
+  letter-spacing: 0.04em;
+  padding: 7px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.toggle[aria-pressed="true"] { border-color: var(--pcb); color: var(--pcb); }
+.switch { display: grid; justify-items: center; gap: 6px; }
+.pushbtn {
+  width: 64px; height: 64px;
+  border-radius: 8px;
+  border: 0;
+  background: var(--switch-body);
+  box-shadow: inset 0 0 0 4px rgba(255,255,255,0.05), 0 6px 14px -6px rgba(0,0,0,0.55);
+  display: grid; place-items: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.pushbtn span {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #5a616b, var(--switch-cap) 60%, #262a30);
+  box-shadow: 0 3px 0 #15181c;
+  transition: transform 60ms ease, box-shadow 60ms ease;
+}
+.pushbtn:active span, .pushbtn.down span { transform: translateY(2px); box-shadow: 0 1px 0 #15181c; }
+.switch .label { font-size: 0.6875rem; }
+
+/* ---------- Sections ---------- */
+.pad { width: 11px; height: 11px; border-radius: 50%; border: 2.5px solid var(--copper); flex: none; }
+h2 {
+  font-family: var(--font-display);
+  font-stretch: 115%;
+  font-weight: 800;
+  font-size: var(--step-3);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  margin: 0;
+  text-wrap: balance;
+}
+h3 {
+  font-family: var(--font-display);
+  font-stretch: 108%;
+  font-weight: 750;
+  font-size: var(--step-2);
+  line-height: 1.15;
+  margin: 0;
+  text-wrap: balance;
+}
+h4 { font-family: var(--font-display); font-weight: 700; font-size: var(--step-1); line-height: 1.25; margin: 0; text-wrap: balance; }
+.prose { max-width: 66ch; }
+.prose p { margin: 0 0 0.9em; }
+.prose p:last-child { margin-bottom: 0; }
+.meta { font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); font-variant-numeric: tabular-nums; }
+ul.ticks { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+ul.ticks li { position: relative; padding-left: 20px; }
+ul.ticks li::before { content: ""; position: absolute; left: 2px; top: 0.68em; width: 8px; height: 2px; background: var(--copper); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.tags li { font-family: var(--font-mono); font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; background: var(--chip); color: var(--ink); }
+
+/* ---------- EcoCAR ---------- */
+.panel {
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: clamp(20px, 3.5vw, 36px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: clamp(20px, 4vw, 48px);
+}
+@media (max-width: 760px) { .panel { grid-template-columns: minmax(0, 1fr); } }
+.panel .head { display: grid; gap: 8px; margin-bottom: 14px; }
+.kv { display: grid; gap: 14px; margin: 0; align-content: start; }
+.kv div { display: grid; gap: 2px; padding-bottom: 12px; border-bottom: 1px dashed var(--rule); }
+.kv div:last-child { border-bottom: 0; padding-bottom: 0; }
+.kv dt { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.kv dd { margin: 0; }
+
+/* ---------- Featured project ---------- */
+.feature { display: grid; gap: 24px; }
+.feature-head { display: grid; gap: 8px; }
+.photo { margin: 0; display: grid; gap: 8px; }
+.photo img { border-radius: 8px; width: 100%; background: var(--chip); }
+.photo figcaption { font-size: 0.875rem; color: var(--muted); }
+.feature-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 48px); }
+@media (max-width: 760px) { .feature-cols { grid-template-columns: minmax(0, 1fr); } }
+.feature-cols > div { min-width: 0; display: grid; gap: 18px; align-content: start; }
+.flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; gap: 6px; }
+.flow .node { border: 1px solid var(--rule); border-radius: 6px; padding: 10px; background: var(--surface); min-width: 0; }
+.flow .node b { display: block; font-family: var(--font-display); font-size: 0.95rem; }
+.flow .node span { display: block; font-size: 0.8125rem; color: var(--muted); line-height: 1.4; }
+.flow .arrow { align-self: center; color: var(--copper); font-family: var(--font-mono); }
+@media (max-width: 480px) {
+  .flow { grid-template-columns: minmax(0, 1fr); }
+  .flow .arrow { justify-self: center; transform: rotate(90deg); }
+}
+.table-scroll { overflow-x: auto; }
+table.spec { width: 100%; border-collapse: collapse; font-size: 0.9375rem; }
+table.spec caption { text-align: left; padding-bottom: 8px; }
+table.spec th, table.spec td { text-align: left; padding: 8px 10px 8px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+table.spec th { font-weight: 500; color: var(--muted); width: 46%; }
+table.spec td { font-family: var(--font-mono); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+/* column widths follow each photo's aspect ratio so all three share one height */
+.strip { display: grid; grid-template-columns: 79fr 49fr 46fr; gap: 12px; align-items: start; }
+@media (max-width: 560px) { .strip { grid-template-columns: 49fr 46fr; } .strip .photo:first-child { grid-column: 1 / -1; } }
+
+/* ---------- PCM feature ---------- */
+.prnd { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.gear { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; align-items: start; padding: 12px; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+.gear b { font-family: var(--font-display); font-stretch: 125%; font-weight: 850; font-size: 1.75rem; line-height: 1; color: var(--pcb); }
+.gear span { font-size: 0.8125rem; color: var(--muted); line-height: 1.45; }
+.gear span strong { display: block; color: var(--ink); font-size: 0.875rem; }
+.fixes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px clamp(16px, 3vw, 32px); }
+@media (max-width: 860px) { .fixes { grid-template-columns: minmax(0, 1fr); } }
+.fix { display: grid; gap: 6px; align-content: start; padding-top: 14px; border-top: 2px solid var(--ink); }
+.fix p { margin: 0; font-size: 0.9375rem; }
+
+/* ---------- Project grid ---------- */
+.result { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0; }
+.result div { display: grid; }
+.result dt { font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.result dd { margin: 0; font-family: var(--font-display); font-stretch: 112%; font-weight: 800; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.role { font-size: 0.9375rem; }
+.role strong { font-weight: 650; }
+
+/* ---------- Galleries, cards with images, about ---------- */
+:root { --matte: #ffffff; }
+.duo { display: grid; gap: 12px; align-items: start; }
+.duo.air { grid-template-columns: 97fr 133fr; }
+.duo.life { grid-template-columns: 133fr 75fr; }
+@media (max-width: 560px) { .duo.air, .duo.life { grid-template-columns: minmax(0, 1fr); } }
+.stack { display: grid; gap: 14px; align-content: start; }
+.about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: clamp(24px, 4vw, 48px); align-items: start; }
+@media (max-width: 900px) { .about { grid-template-columns: minmax(0, 1fr); } }
+.about-text { display: grid; gap: 16px; min-width: 0; }
+.about-text p { margin: 0; }
+.artists { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--rule); }
+.artists li { padding: 10px 0; border-bottom: 1px solid var(--rule); font-family: var(--font-display); font-stretch: 112%; font-weight: 700; font-size: 1.05rem; }
+.artists li:nth-child(odd) { padding-right: 12px; }
+
+/* ---------- Pages (click to view) ---------- */
+:root { --prnd-dim: rgba(238, 243, 255, 0.34); }
+[tabindex="-1"]:focus { outline: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .view:not([hidden]) { animation: viewin 220ms ease-out both; }
+  @keyframes viewin { from { opacity: 0.55; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
+.page { padding-block: clamp(32px, 6vw, 64px) clamp(56px, 8vw, 96px); }
+.view-head { display: grid; gap: 12px; margin-bottom: clamp(24px, 4vw, 40px); }
+.view-head .label { display: flex; align-items: center; gap: 10px; }
+.view-head h1, .contact-title {
+  font-family: var(--font-display); font-stretch: 120%; font-weight: 850;
+  font-size: clamp(2.2rem, 5.5vw, 3.6rem); line-height: 1; letter-spacing: -0.015em; margin: 0; text-wrap: balance;
+}
+.view-head .lede { color: var(--muted); }
+.page-body { display: grid; gap: clamp(28px, 4vw, 44px); min-width: 0; }
+.subsection { display: grid; gap: 20px; padding-top: clamp(24px, 4vw, 40px); border-top: 1px solid var(--rule); }
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin-bottom: clamp(20px, 3vw, 32px); }
+.backlink { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9375rem; text-decoration: none; color: var(--muted); }
+.backlink:hover { color: var(--ink); }
+.project-view .feature-head h2 { font-size: clamp(2rem, 4.6vw, 3.1rem); font-stretch: 118%; }
+.home-projects { display: grid; gap: 20px; padding-bottom: clamp(56px, 8vw, 96px); }
+.row-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 16px; }
+.row-head h2 { font-size: var(--step-2); }
+
+.pcards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 2.4vw, 24px); }
+@media (max-width: 980px) {
+  .pcards.all { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pcards.featured { grid-template-columns: minmax(0, 1fr); }
+  .pcards.featured .pcard { grid-template-columns: minmax(0, 220px) minmax(0, 1fr); grid-template-rows: none; }
+  .pcards.featured .pthumb { aspect-ratio: auto; height: 100%; min-height: 150px; }
+}
+@media (max-width: 600px) {
+  .pcards.all { grid-template-columns: minmax(0, 1fr); }
+  .pcards.featured .pcard { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
+  .pcards.featured .pthumb { aspect-ratio: 4 / 3; height: auto; min-height: 0; }
+}
+.pcard {
+  display: grid; grid-template-rows: auto 1fr; min-width: 0;
+  border: 1px solid var(--rule); border-radius: 10px; overflow: hidden;
+  background: var(--surface); color: inherit; text-decoration: none;
+  transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+}
+.pcard:hover { border-color: var(--ink); transform: translateY(-2px); box-shadow: 0 12px 26px -18px rgba(0, 0, 0, 0.45); }
+@media (prefers-reduced-motion: reduce) { .pcard { transition: none; } .pcard:hover { transform: none; } }
+.pthumb { aspect-ratio: 4 / 3; overflow: hidden; background: var(--chip); display: grid; place-items: center; }
+.pthumb img { width: 100%; height: 100%; object-fit: cover; }
+.pthumb.contain { background: var(--matte); }
+.pthumb.contain img { object-fit: contain; padding: 6%; }
+.t-prnd { background: var(--lcd-pcb); display: flex; justify-content: center; align-items: center; gap: 7%; }
+.t-prnd span { font-family: var(--font-display); font-stretch: 125%; font-weight: 850; font-size: clamp(2rem, 4vw, 3rem); line-height: 1; color: var(--prnd-dim); }
+.t-prnd .on { color: var(--lcd-gold); }
+.t-stat { display: grid; place-content: center; justify-items: center; gap: 6px; text-align: center; }
+.t-stat b { font-family: var(--font-display); font-stretch: 115%; font-weight: 850; font-size: clamp(1.7rem, 3.4vw, 2.5rem); font-variant-numeric: tabular-nums; }
+.t-stat span { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.pbody { display: grid; gap: 8px; align-content: start; padding: 16px 18px 18px; min-width: 0; }
+.pbody h3 { font-size: 1.2rem; }
+.pbody p { margin: 0; font-size: 0.9375rem; color: var(--muted); }
+.pbody .more { margin-top: 2px; font-size: 0.9rem; font-weight: 600; color: var(--copper); }
+.pager { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-top: 24px; border-top: 1px solid var(--rule); }
+.pager a { display: grid; gap: 4px; padding: 14px 16px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); text-decoration: none; min-width: 0; }
+.pager a:hover { border-color: var(--ink); }
+.pager b { font-family: var(--font-display); font-size: 1.05rem; }
+.pager .next { grid-column: 2; text-align: right; }
+@media (max-width: 560px) { .pager { grid-template-columns: minmax(0, 1fr); } .pager .next { grid-column: auto; } }
+ol.steps { margin: 8px 0 0; padding-left: 1.5em; display: grid; gap: 6px; }
+ol.steps li::marker { font-family: var(--font-mono); color: var(--copper); }
+.photo.chart img { background: var(--matte); padding: 4%; }
+table.spec thead th { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; width: auto; }
+
+/* ---------- Experience ---------- */
+.timeline { list-style: none; padding: 0; margin: 0; display: grid; }
+.job { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 8px clamp(16px, 3vw, 36px); padding-block: 22px; border-bottom: 1px solid var(--rule); }
+.job:first-child { padding-top: 0; }
+.job:last-child { border-bottom: 0; }
+@media (max-width: 620px) { .job { grid-template-columns: minmax(0, 1fr); } }
+.job .when { font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 4px; }
+.job .what { display: grid; gap: 8px; min-width: 0; }
+.job .org { color: var(--muted); font-size: 0.9375rem; }
+
+/* ---------- Clubs ---------- */
+.clubs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 860px) { .clubs { grid-template-columns: minmax(0, 1fr); } }
+.club { display: grid; gap: 6px; align-content: start; padding: 18px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+.club p { margin: 0; font-size: 0.9375rem; color: var(--muted); }
+.awards { display: grid; gap: 10px; }
+.award { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
+.award:last-child { border-bottom: 0; }
+
+/* ---------- Skills ---------- */
+.skills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px clamp(24px, 4vw, 48px); }
+@media (max-width: 680px) { .skills { grid-template-columns: minmax(0, 1fr); } }
+.skill { display: grid; gap: 10px; align-content: start; }
+
+/* ---------- Contact ---------- */
+.contact { display: grid; gap: 22px; }
+.email-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.email {
+  font-family: var(--font-mono);
+  font-size: clamp(1rem, 2.4vw, 1.25rem);
+  padding: 10px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--surface);
+  user-select: all;
+  overflow-wrap: anywhere;
+}
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+/* ---------- Contact bar and footer ---------- */
+.contactbar { background: var(--ink); color: var(--bg); font-size: 0.8125rem; }
+.contactbar .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 20px; padding-block: 7px; }
+.contactbar a { color: inherit; text-decoration: none; }
+.contactbar a:hover { text-decoration: underline; }
+.avail { display: inline-flex; align-items: center; gap: 8px; }
+.avail .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); flex: none; }
+.cb-links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; min-width: 0; }
+.cb-email { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); overflow-wrap: anywhere; }
+.cb-copy { font: 500 0.75rem/1 var(--font-body); padding: 4px 8px; border-radius: 4px; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; opacity: 0.85; }
+.cb-copy:hover { opacity: 1; }
+@media (max-width: 640px) { .avail, .cb-loc { display: none; } }
+.site-footer { border-top: 1px solid var(--rule); background: var(--surface); }
+.f-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 28px clamp(24px, 5vw, 64px); padding-block: clamp(32px, 5vw, 48px) 28px; }
+@media (max-width: 760px) { .f-grid { grid-template-columns: minmax(0, 1fr); } }
+.f-id { display: grid; gap: 12px; align-content: start; }
+.f-id p { margin: 0; color: var(--muted); font-size: 0.9375rem; max-width: 40ch; }
+.f-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.f-contact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 24px; margin: 0; }
+@media (max-width: 480px) { .f-contact { grid-template-columns: minmax(0, 1fr); } }
+.f-contact div { display: grid; gap: 3px; min-width: 0; }
+.f-contact dt { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.f-contact dd { margin: 0; overflow-wrap: anywhere; }
+.f-contact .sel { font-family: var(--font-mono); font-size: 0.9375rem; user-select: all; }
+.f-contact .cb-copy { margin-left: 4px; }
+.f-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding-block: 16px 28px; background: linear-gradient(var(--rule), var(--rule)) center top / calc(100% - 2 * var(--gutter)) 1px no-repeat; }
+.f-base p { margin: 0; font-size: 0.8125rem; color: var(--muted); }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.toast {
+  position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  background: var(--ink); color: var(--bg);
+  padding: 10px 14px; border-radius: 6px; font-size: 0.875rem;
+  max-width: calc(100% - 32px);
+}
+</style>
+
+<div class="contactbar">
+  <div class="wrap">
+    <span class="avail"><span class="dot" aria-hidden="true"></span>Open to Summer 2027 mechatronics internships</span>
+    <div class="cb-links">
+      <span class="cb-email"><a href="mailto:iliya.gh2006@gmail.com">iliya.gh2006@gmail.com</a><button type="button" class="cb-copy" data-copy="iliya.gh2006@gmail.com" aria-label="Copy email address">Copy</button></span>
+      <a href="https://www.linkedin.com/in/iliya-ghamoushi/" target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a>
+      <span class="cb-loc">Hamilton &amp; Toronto, ON</span>
+    </div>
+  </div>
+</div>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#home">Iliya Ghamoushi</a>
+    <nav class="tabs" aria-label="Pages">
+      <a href="#home" data-view="home">Home</a>
+      <a href="#projects" data-view="projects">Projects</a>
+      <a href="#ecocar" data-view="ecocar">EcoCAR</a>
+      <a href="#experience" data-view="experience">Experience</a>
+      <a href="#skills" data-view="skills">Skills</a>
+      <a href="#about" data-view="about">About</a>
+      <a href="#contact" data-view="contact">Contact</a>
+    </nav>
+    <a class="btn small resume-top" href="Iliya-Ghamoushi-Resume.pdf" target="_blank" rel="noopener" data-resume>Resume</a>
+  </div>
+</header>
+
+<main id="main">
+  <section class="view" id="home" data-title="Home">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="label" style="margin:0">Mechatronics &amp; Management Engineering · McMaster University</p>
+        <h1>Iliya Ghamoushi</h1>
+        <p class="lede">I'm a third-year mechatronics student who likes building things that move, light up and respond. I've programmed embedded systems, built a 10-speed transmission controller in Simulink, and done residential and commercial electrical work. I just joined McMaster EcoCAR's Propulsion Controls &amp; Modeling team.</p>
+        <span class="status"><span class="dot" aria-hidden="true"></span>Looking for a Summer 2027 mechatronics internship (May to August)</span>
+        <dl class="facts">
+          <div><dt>GPA</dt><dd>11.4 / 12.0</dd></div>
+          <div><dt>Standing</dt><dd>Dean's Honour List 2025</dd></div>
+          <div><dt>Based in</dt><dd>Hamilton &amp; Toronto, ON</dd></div>
+        </dl>
+        <div class="actions">
+          <a class="btn primary" href="Iliya-Ghamoushi-Resume.pdf" target="_blank" rel="noopener" data-resume>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 2v8m0 0L4.8 6.8M8 10l3.2-3.2M3 13h10"/></svg>
+            Download resume
+          </a>
+          <a class="btn" href="https://www.linkedin.com/in/iliya-ghamoushi/" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn" href="#contact">Email me</a>
+        </div>
+      </div>
+
+      <figure class="bench" aria-labelledby="bench-cap">
+        <div class="lcd-board">
+          <span class="hole tl"></span><span class="hole tr"></span><span class="hole bl"></span><span class="hole br"></span>
+          <span class="pins" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+          <div class="bezel">
+            <canvas id="lcd" tabindex="0" role="button" aria-label="16 by 2 character LCD showing PRESS START. Press Space or tap to play Nyan Cat Runner."></canvas>
+          </div>
+        </div>
+        <div class="bench-controls">
+          <div class="left">
+            <figcaption id="bench-cap"><p><strong style="color:var(--ink)">Nyan Cat Runner</strong>, my embedded systems term project, rebuilt for the browser. Tap the screen, press the button or hit Space to jump.</p></figcaption>
+            <button class="toggle" id="soundBtn" type="button" aria-pressed="false">Sound: off</button>
+          </div>
+          <div class="switch">
+            <button class="pushbtn" id="jumpBtn" type="button" aria-label="Jump (pushbutton)"><span></span></button>
+            <span class="label">Jump</span>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+    <div class="wrap home-projects">
+      <div class="row-head">
+        <h2>Selected projects</h2>
+        <a class="btn small" href="#projects">All 6 projects <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="pcards featured">
+          <a class="pcard" href="#project-pcm">
+            <div class="pthumb t-prnd" aria-hidden="true"><span>P</span><span>R</span><span>N</span><span class="on">D</span></div>
+            <div class="pbody">
+              <span class="meta">EcoCAR PCM challenge · 2026</span>
+              <h3>10-speed transmission controller</h3>
+              <p>Stateflow gear-selector logic for a vehicle model, verified with 15 automated Simulink tests.</p>
+              <span class="more">View project <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+          <a class="pcard" href="#project-nyan">
+            <div class="pthumb"><img src="assets/circuit-wide.jpg" width="1400" height="529" alt="" loading="lazy"></div>
+            <div class="pbody">
+              <span class="meta">MECHTRON 2TA4 · 2026</span>
+              <h3>Nyan Cat Runner</h3>
+              <p>An obstacle-avoidance game on a 16×2 LCD with a 20 Hz loop, pushbutton input and piezo audio.</p>
+              <span class="more">View project <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+          <a class="pcard" href="#project-airport">
+            <div class="pthumb"><img src="assets/airport-cad.jpg" width="805" height="832" alt="" loading="lazy"></div>
+            <div class="pbody">
+              <span class="meta">ENGINEER 1P13 · 2024</span>
+              <h3>Automated airport luggage system</h3>
+              <p>A geared rotary-actuator bucket that sorts and transfers luggage, from CAD to 3D-printed parts.</p>
+              <span class="more">View project <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="view page" id="projects" data-title="Projects">
+    <div class="wrap">
+      <header class="view-head">
+        <span class="label"><span class="pad" aria-hidden="true"></span>Projects</span>
+        <h1>Projects</h1>
+        <p class="lede">Controls, embedded systems and mechanical design, newest first. Pick one to see the details.</p>
+      </header>
+      <div class="page-body">
+        <div class="pcards all">
+          <a class="pcard" href="#project-pcm">
+            <div class="pthumb t-prnd" aria-hidden="true"><span>P</span><span>R</span><span>N</span><span class="on">D</span></div>
+            <div class="pbody">
+              <span class="meta">EcoCAR PCM challenge · 2026</span>
+              <h3>10-speed transmission controller</h3>
+              <p>Stateflow gear-selector logic for a vehicle model, verified with 15 automated Simulink tests.</p>
+              <span class="more">View project <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+          <a class="pcard" href="#project-nyan">
+            <div class="pthumb"><img src="assets/circuit-wide.jpg" width="1400" height="529" alt="" loading="lazy"></div>
+            <div class="pbody">
+              <span class="meta">MECHTRON 2TA4 · 2026</span>
+              <h3>Nyan Cat Runner</h3>
+              <p>An obstacle-avoidance game on a 16×2 LCD with a 20 Hz loop, pushbutton input and piezo audio.</p>
+              <span class="more">View project <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+          <a class="pcard" href="#project-airport">
+            <div class="pthumb"><img src="assets/airport-cad.jpg" width="805" height="832" alt="" loading="lazy"></div>
+            <div class="pbody">
+              <span class="meta">ENGINEER 1P13 · 2024</span>
+              <h3>Automated airport luggage system</h3>
+              <p>A geared rotary-actuator bucket that sorts and transfers luggage, from CAD to 3D-printed parts.</p>
+              <span class="more">View project <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+          <a class="pcard" href="#project-antworld">
+            <div class="pthumb t-stat" aria-hidden="true"><b>23.8 → 35.4</b><span>Average score</span></div>
+            <div class="pbody">
+              <span class="meta">EcoCAR CAV challenge · 2026</span>
+              <h3>AntWorld colony controller</h3>
+              <p>A C++ controller that plans every ant's move on energy cost. Average score up 49%.</p>
+              <span class="more">View project <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+          <a class="pcard" href="#project-cutting">
+            <div class="pthumb"><img src="assets/cutting-board.jpg" width="706" height="814" alt="" loading="lazy"></div>
+            <div class="pbody">
+              <span class="meta">Power in the Community · 2025</span>
+              <h3>Modular guided cutting board</h3>
+              <p>An assistive kitchen tool for a client with Usher syndrome. I designed the knife handle.</p>
+              <span class="more">View project <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+          <a class="pcard" href="#project-wastewater">
+            <div class="pthumb contain"><img src="assets/wastewater-ecoaudit.jpg" width="982" height="830" alt="" loading="lazy"></div>
+            <div class="pbody">
+              <span class="meta">Design project · 2025</span>
+              <h3>Wastewater filter material selection</h3>
+              <p>Ranked filter materials in Ansys Granta and chose UHMWPE fibre at about 7.3% porosity.</p>
+              <span class="more">View project <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+        </div>
+        <p class="meta" style="margin:0">Full write-ups of my first-year design projects are in my <a href="https://low-plywood-0a5.notion.site/Iliya-Ghamoushi-1713a01faf04802097a5e22f68d34625" target="_blank" rel="noopener">Notion portfolio</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="view page project-view" id="project-pcm" data-title="Transmission controller">
+    <div class="wrap">
+      <div class="crumbs">
+        <a class="backlink" href="#projects"><span aria-hidden="true">←</span> All projects</a>
+        <span class="label">Project 1 of 6</span>
+      </div>
+      <div class="page-body">
+        <article class="feature" aria-labelledby="pcm-title">
+          <div class="feature-head">
+            <span class="meta">EcoCAR PCM development challenge · Sept to Oct 2026 · Two-person team</span>
+            <h2 id="pcm-title">A 10-speed transmission controller in Simulink and Stateflow</h2>
+          </div>
+          <div class="feature-cols">
+            <div>
+              <div class="prose">
+                <p>PCM's entry challenge was to write the controller for a 10-speed automatic transmission. We were given the plant, a longitudinal vehicle model with an engine, torque converter and gearbox, plus a system specification. Our controller reads the gear lever, throttle, brake, vehicle speed and engine RPM, then decides the gear, the parking brake and the final throttle.</p>
+                <p>We wrote the requirements first, built the gear-selector logic as a Stateflow state machine, and verified it with automated tests linked to each requirement. We presented it to the PCM leads at the McMaster Automotive Resource Centre (MARC), and it earned me my spot on the team.</p>
+              </div>
+              <div class="prnd" role="list" aria-label="Gear selector states">
+                <div class="gear" role="listitem"><b>P</b><span><strong>Park</strong>Gear 0, parking brake on. Only when |v| &lt; 0.1 m/s.</span></div>
+                <div class="gear" role="listitem"><b>R</b><span><strong>Reverse</strong>Gear &minus;1. Only when v &lt; 0.5 m/s.</span></div>
+                <div class="gear" role="listitem"><b>N</b><span><strong>Neutral</strong>Gear 0. Allowed at any speed.</span></div>
+                <div class="gear" role="listitem"><b>D</b><span><strong>Drive</strong>Gears 1 to 10. Only when v &gt; &minus;0.5 m/s.</span></div>
+              </div>
+              <ul class="tags" aria-label="Tools">
+                <li>MATLAB</li><li>Simulink</li><li>Stateflow</li><li>Requirements Toolbox</li><li>Simulink Test</li><li>Git</li>
+              </ul>
+            </div>
+            <div class="table-scroll">
+              <table class="spec">
+                <caption class="label">Requirements we built to</caption>
+                <tbody>
+                  <tr><th scope="row">Park allowed</th><td>|v| &lt; 0.1 m/s</td></tr>
+                  <tr><th scope="row">Parking actuator lock / release</th><td>&le; 100 ms</td></tr>
+                  <tr><th scope="row">Drive allowed</th><td>v &gt; &minus;0.5 m/s</td></tr>
+                  <tr><th scope="row">Reverse allowed</th><td>v &lt; 0.5 m/s</td></tr>
+                  <tr><th scope="row">Neutral allowed</th><td>Any speed</td></tr>
+                  <tr><th scope="row">Engine speed window</th><td>800 &ndash; 7250 RPM</td></tr>
+                  <tr><th scope="row">0&ndash;60 mph target</th><td>&lt; 12 s</td></tr>
+                  <tr><th scope="row">Throttle override per shift</th><td>&le; 1 s</td></tr>
+                  <tr><th scope="row">Automated test cases</th><td>15</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="fixes">
+            <div class="fix">
+              <span class="meta">Problem</span>
+              <h4>Engine stalled in Reverse</h4>
+              <p>Engaging a gear at idle loads the engine through the torque converter, and RPM fell from 700 to about 250. We added idle throttle control at low RPM and tuned its threshold from 700 up to 1000 RPM.</p>
+            </div>
+            <div class="fix">
+              <span class="meta">Problem · found by me</span>
+              <h4>Feedback wired to the wrong inputs</h4>
+              <p>Speed, RPM and power were feeding the wrong controller ports. Our controller-only tests skipped the top-level wiring, so they never caught it. Lesson: test the whole system, not just the unit.</p>
+            </div>
+            <div class="fix">
+              <span class="meta">Problem · fixed by me</span>
+              <h4>Tests that couldn't fail</h4>
+              <p>Some test assessments had their timing backwards or no tolerance. I corrected them, added a 10&ndash;20 ms timing buffer, and cleaned up the requirement IDs and wording.</p>
+            </div>
+          </div>
+          <p class="role" style="margin:0"><strong>My part:</strong> reviewed the model integration and found the swapped feedback wiring, fixed the test assessments and requirement wording, and prepared our presentation.</p>
+        </article>
+        <nav class="pager" aria-label="More projects">
+          <a class="next" href="#project-nyan"><span class="meta">Next →</span><b>Nyan Cat Runner</b></a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="view page project-view" id="project-nyan" data-title="Nyan Cat Runner">
+    <div class="wrap">
+      <div class="crumbs">
+        <a class="backlink" href="#projects"><span aria-hidden="true">←</span> All projects</a>
+        <span class="label">Project 2 of 6</span>
+      </div>
+      <div class="page-body">
+        <article class="feature" aria-labelledby="ncr-title">
+          <div class="feature-head">
+            <span class="meta">MECHTRON 2TA4 · Embedded Systems Design I · Winter 2026</span>
+            <h2 id="ncr-title">Nyan Cat Runner: an obstacle-avoidance game on a 16×2 LCD</h2>
+          </div>
+          <figure class="photo">
+            <img src="assets/circuit-wide.jpg" width="1400" height="529" alt="Arduino Uno on a breadboard wired to a blue 16 by 2 character LCD showing PRESS START and BEST:0, with a hand on the pushbutton.">
+            <figcaption>The full circuit: microcontroller, pushbutton, piezo buzzer and a 16×2 character LCD.</figcaption>
+          </figure>
+          <div class="feature-cols">
+            <div>
+              <div class="prose">
+                <p>A side-scrolling runner on a character LCD. The cat dodges star obstacles that scroll in from the right, faster and faster. One pushbutton makes it jump, the game keeps your score and best score, and a piezo buzzer beeps faster as the speed climbs and plays a crash sound when you hit a star.</p>
+                <p>The main loop runs on a fixed 20 Hz tick. A fractional speed accumulator lets obstacles move less than one column per tick, so scrolling stays smooth even though the LCD can only draw whole characters. The sprites are custom 5×8 pixel characters.</p>
+              </div>
+              <div class="flow" role="list" aria-label="System architecture">
+                <div class="node" role="listitem"><b>Sense</b><span>Pushbuttons for start and jump</span></div>
+                <span class="arrow" aria-hidden="true">→</span>
+                <div class="node" role="listitem"><b>Process</b><span>Finite-state machine on a 20 Hz tick</span></div>
+                <span class="arrow" aria-hidden="true">→</span>
+                <div class="node" role="listitem"><b>Act</b><span>LCD sprites and piezo audio</span></div>
+              </div>
+              <ul class="tags" aria-label="Tools">
+                <li>Arduino</li><li>C / C++</li><li>16×2 LCD</li><li>Finite-state machine</li><li>Piezo audio</li>
+              </ul>
+            </div>
+            <div class="table-scroll">
+              <table class="spec">
+                <caption class="label">Timing and characteristics</caption>
+                <tbody>
+                  <tr><th scope="row">Display</th><td>16 × 2 character LCD</td></tr>
+                  <tr><th scope="row">Game loop</th><td>20 Hz (50 ms tick)</td></tr>
+                  <tr><th scope="row">Scroll speed</th><td>0.35 → 1.40 col/tick (4× ramp)</td></tr>
+                  <tr><th scope="row">Jump airtime</th><td>300 ms (6 ticks)</td></tr>
+                  <tr><th scope="row">Obstacles on screen</th><td>3 max</td></tr>
+                  <tr><th scope="row">Obstacle spawning</th><td>Pseudo-random cooldown, random()</td></tr>
+                  <tr><th scope="row">Sprites</th><td>Custom 5 × 8 px characters</td></tr>
+                  <tr><th scope="row">Best recorded score</th><td>196</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="strip">
+            <figure class="photo">
+              <img src="assets/press-start.jpg" width="654" height="824" loading="lazy" alt="Overhead view of the breadboard, piezo buzzer, microcontroller and LCD showing PRESS START.">
+              <figcaption>Idle: press start</figcaption>
+            </figure>
+            <figure class="photo">
+              <img src="assets/gameplay.jpg" width="404" height="824" loading="lazy" alt="Close-up of the LCD mid-game with the cat sprite on screen.">
+              <figcaption>Running: cat sprite</figcaption>
+            </figure>
+            <figure class="photo">
+              <img src="assets/game-over.jpg" width="378" height="824" loading="lazy" alt="Close-up of the LCD showing GAME OVER and S:196 B:196.">
+              <figcaption>Game over: S:196 B:196</figcaption>
+            </figure>
+          </div>
+        </article>
+        <nav class="pager" aria-label="More projects">
+          <a class="prev" href="#project-pcm"><span class="meta">← Previous</span><b>Transmission controller</b></a>
+          <a class="next" href="#project-airport"><span class="meta">Next →</span><b>Airport luggage system</b></a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="view page project-view" id="project-airport" data-title="Airport luggage system">
+    <div class="wrap">
+      <div class="crumbs">
+        <a class="backlink" href="#projects"><span aria-hidden="true">←</span> All projects</a>
+        <span class="label">Project 3 of 6</span>
+      </div>
+      <div class="page-body">
+        <article class="feature" aria-labelledby="air-title">
+          <div class="feature-head">
+            <span class="meta">ENGINEER 1P13 · Integrated Cornerstone Design · Oct to Dec 2024</span>
+            <h2 id="air-title">Automated airport luggage system</h2>
+          </div>
+          <div class="duo air">
+            <figure class="photo">
+              <img src="assets/airport-cad.jpg" width="805" height="832" loading="lazy" alt="Inventor render of the final assembly: a black perforated frame with a white ramp feeding a bucket, a large and small gear, and the rotary actuator mount.">
+              <figcaption>Final assembly: the ramp drops the bag into the bucket, and the geared actuator flips it onto the lower platform.</figcaption>
+            </figure>
+            <figure class="photo">
+              <img src="assets/airport-exploded.jpg" width="1388" height="1044" loading="lazy" alt="Engineering drawing titled Exploded View, ENGINEER 1P13, dated 12/4/2024, with numbered balloons and a parts list including the rotary actuator mount and support, top ramp, bucket supports, bucket and gears.">
+              <figcaption>Exploded view and parts list, Dec 2024.</figcaption>
+            </figure>
+          </div>
+          <div class="feature-cols">
+            <div>
+              <div class="prose">
+                <p>The brief: check passenger luggage in by ticket type (economy, business, layover) and move it from the conveyor platform down to the plane, using either a rotary or a linear actuator but not both. Our design catches the bag in a bucket, and a rotary actuator, geared up for torque, turns the bucket over so the bag slides onto the lower platform.</p>
+              </div>
+              <ul class="ticks role">
+                <li><strong>Project coordinator:</strong> ran meetings outside studio and logged every session</li>
+                <li>Programmed the layover sorting function in Python and helped finish the others</li>
+                <li>Built a Python GUI that displays flight and passenger data in real time</li>
+                <li>Made the engineering drawings for the rotary actuator support and bucket support in Autodesk Inventor, then 3D printed and reprinted parts</li>
+              </ul>
+              <p class="role" style="margin:0"><strong>Next time:</strong> thinner bucket walls, to cut the load on the actuator and save material.</p>
+              <ul class="tags"><li>Python</li><li>Autodesk Inventor</li><li>Stepper actuator</li><li>Q-Arm</li><li>3D printing</li></ul>
+            </div>
+            <div class="stack">
+              <figure class="photo">
+                <img src="assets/airport-print.jpg" width="1000" height="804" loading="lazy" alt="A magenta 3D-printed U-shaped bracket with four mounting holes in its base and a hole in each side wall.">
+                <figcaption>3D-printed actuator support.</figcaption>
+              </figure>
+              <figure class="photo">
+                <img src="assets/airport-code.jpg" width="1000" height="711" loading="lazy" alt="Python code that activates the stepper motor, then twice rotates it clockwise 1.2, waits 2 seconds, and rotates it counterclockwise 1.2.">
+                <figcaption>Python test script that cycles the stepper motor back and forth.</figcaption>
+              </figure>
+            </div>
+          </div>
+        </article>
+        <nav class="pager" aria-label="More projects">
+          <a class="prev" href="#project-nyan"><span class="meta">← Previous</span><b>Nyan Cat Runner</b></a>
+          <a class="next" href="#project-antworld"><span class="meta">Next →</span><b>AntWorld</b></a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="view page project-view" id="project-antworld" data-title="AntWorld">
+    <div class="wrap">
+      <div class="crumbs">
+        <a class="backlink" href="#projects"><span aria-hidden="true">←</span> All projects</a>
+        <span class="label">Project 4 of 6</span>
+      </div>
+      <div class="page-body">
+        <article class="feature" aria-labelledby="ant-title">
+          <div class="feature-head">
+            <span class="meta">EcoCAR CAV development challenge · Sept 2026 · Pair project</span>
+            <h2 id="ant-title">AntWorld: an energy-aware colony controller</h2>
+          </div>
+          <div class="feature-cols">
+            <div>
+              <div class="prose">
+                <p>In C++, we wrote one controller that picks every ant's move each step. The colony's food map is built only from what the ants actually sense, and every trip is planned on energy cost. Unseen terrain is assumed to cost the maximum, so the colony never commits to a trip it can't afford.</p>
+              </div>
+              <div>
+                <span class="label">Each ant's decision, in priority order</span>
+                <ol class="steps">
+                  <li><b>Scan</b> every step, since scanning costs no energy.</li>
+                  <li><b>Deliver:</b> an ant carrying food heads home. If it runs out on the way, the food drops closer to home for another ant to finish.</li>
+                  <li><b>Collect:</b> otherwise, go to the known food with the cheapest full trip, ant to food to home.</li>
+                  <li><b>Last trip:</b> if no full trip is affordable, carry the cheapest reachable food closer to home.</li>
+                  <li><b>Explore:</b> if no food is known, head to the first unexplored cell.</li>
+                </ol>
+              </div>
+              <ul class="tags"><li>C++</li><li>CMake</li><li>Git</li><li>Path planning</li><li>Debugging</li></ul>
+            </div>
+            <div>
+              <dl class="result">
+                <div><dt>Avg score, 100 seeds</dt><dd>23.8 → 35.4</dd></div>
+                <div><dt>Unfinished games</dt><dd>57 → 7</dd></div>
+              </dl>
+              <div class="table-scroll">
+                <table class="spec">
+                  <caption class="label">Results by change, seeds 1 to 100</caption>
+                  <thead><tr><th scope="col">Change</th><th scope="col">Avg score</th><th scope="col">Unfinished</th></tr></thead>
+                  <tbody>
+                    <tr><th scope="row">First version: explore, collect, return</th><td>23.8</td><td>57</td></tr>
+                    <tr><th scope="row">Scan every step, sensor-only memory, cheapest trip, last trip</th><td>35.4</td><td>82</td></tr>
+                    <tr><th scope="row">Plan only on terrain already seen</th><td>35.4</td><td>82</td></tr>
+                    <tr><th scope="row">Spend leftover energy when stuck</th><td>35.4</td><td>7</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="role" style="margin:0"><strong>Biggest lesson:</strong> the largest gain came from a one-line bug. Ants only scanned when they weren't carrying food. A per-move debug log exposed it, and fixing it added 11 points to the average.</p>
+            </div>
+          </div>
+        </article>
+        <nav class="pager" aria-label="More projects">
+          <a class="prev" href="#project-airport"><span class="meta">← Previous</span><b>Airport luggage system</b></a>
+          <a class="next" href="#project-cutting"><span class="meta">Next →</span><b>Guided cutting board</b></a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="view page project-view" id="project-cutting" data-title="Guided cutting board">
+    <div class="wrap">
+      <div class="crumbs">
+        <a class="backlink" href="#projects"><span aria-hidden="true">←</span> All projects</a>
+        <span class="label">Project 5 of 6</span>
+      </div>
+      <div class="page-body">
+        <article class="feature" aria-labelledby="cut-title">
+          <div class="feature-head">
+            <span class="meta">Power in the Community · Feb to Mar 2025 · Team coordinator</span>
+            <h2 id="cut-title">Modular guided cutting board</h2>
+          </div>
+          <div class="feature-cols">
+            <div>
+              <div class="prose">
+                <p>An assistive kitchen tool for a client with Usher syndrome, which limits her sight and hearing. The design had to be easy to use, high-contrast, easy to move around, low-cost and safe.</p>
+                <p>Attachable picket-style walls guide each cut, a roofed finger guard with stabilizing spikes protects her hand, and a custom knife handle keeps her grip steady and directed.</p>
+              </div>
+              <ul class="ticks role">
+                <li><strong>Team coordinator:</strong> logged every design studio and lab</li>
+                <li>Designed and modelled the knife handle in CAD; prototyped with 3D printing</li>
+                <li>Wrote the executive summary, problem framing and conceptual design sections, plus the testing plans</li>
+              </ul>
+              <p class="role" style="margin:0"><strong>What testing taught us:</strong> using the board blindfolded showed how hard it was to use, so we redesigned the walls with slanted tops.</p>
+              <ul class="tags"><li>CAD</li><li>3D printing</li><li>Assistive design</li><li>User testing</li></ul>
+            </div>
+            <figure class="photo">
+              <img src="assets/cutting-board.jpg" width="706" height="814" loading="lazy" alt="Prototype cutting board with alternating green and orange picket-style walls on a grey base, a black angled finger guard, and a black knife handle.">
+              <figcaption>Prototype: picket guide walls, finger guard and the knife handle I designed.</figcaption>
+            </figure>
+          </div>
+        </article>
+        <nav class="pager" aria-label="More projects">
+          <a class="prev" href="#project-antworld"><span class="meta">← Previous</span><b>AntWorld</b></a>
+          <a class="next" href="#project-wastewater"><span class="meta">Next →</span><b>Wastewater filter</b></a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="view page project-view" id="project-wastewater" data-title="Wastewater filter">
+    <div class="wrap">
+      <div class="crumbs">
+        <a class="backlink" href="#projects"><span aria-hidden="true">←</span> All projects</a>
+        <span class="label">Project 6 of 6</span>
+      </div>
+      <div class="page-body">
+        <article class="feature" aria-labelledby="ww-title">
+          <div class="feature-head">
+            <span class="meta">First-year design project · Jan to Feb 2025 · Subject matter expert</span>
+            <h2 id="ww-title">Wastewater filter material selection</h2>
+          </div>
+          <div class="feature-cols">
+            <div>
+              <div class="prose">
+                <p>We chose a filter material for algae-choked treatment ponds in Tampakan, Philippines, targeting contaminants of 1 to 100 µm. We ranked candidates in Ansys Granta EduPack using material performance indices for carbon footprint and production energy, and selected UHMWPE fibre.</p>
+                <p>We estimated porosity by comparing the Young's modulus of porous and solid material from Ashby charts and the Granta database. At about 7.3%, the fibre keeps the strength it needs for filtration.</p>
+              </div>
+              <dl class="result">
+                <div><dt>Estimated porosity</dt><dd>≈ 7.3%</dd></div>
+                <div><dt>Contaminant size</dt><dd>1–100 µm</dd></div>
+              </dl>
+              <ul class="ticks role">
+                <li><strong>Subject matter expert:</strong> managed and vetted the team's sources</li>
+                <li>Calculated the material performance index for minimum production energy</li>
+                <li>Wrote Python scripts to automate the porosity and fluid flow calculations</li>
+              </ul>
+              <ul class="tags"><li>Ansys Granta</li><li>Python</li><li>Materials selection</li><li>Life-cycle analysis</li></ul>
+            </div>
+            <figure class="photo chart">
+              <img src="assets/wastewater-ecoaudit.jpg" width="982" height="830" loading="lazy" alt="Granta eco audit bar chart of energy and climate change contribution by life phase: material about 39 and 28 percent, manufacture about 40 and 49 percent, transport about 21 and 22 percent, with a small negative end-of-life potential.">
+              <figcaption>Granta eco audit for UHMWPE: energy and CO₂ by life phase.</figcaption>
+            </figure>
+          </div>
+        </article>
+        <nav class="pager" aria-label="More projects">
+          <a class="prev" href="#project-cutting"><span class="meta">← Previous</span><b>Guided cutting board</b></a>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="view page" id="ecocar" data-title="EcoCAR">
+    <div class="wrap">
+      <header class="view-head">
+        <span class="label"><span class="pad" aria-hidden="true"></span>Now</span>
+        <h1>McMaster EcoCAR</h1>
+      </header>
+      <div class="page-body">
+        <div class="panel">
+          <div>
+            <div class="head">
+              <span class="meta">McMaster EcoCAR · Oct 2026 to present</span>
+              <h2>Propulsion Controls &amp; Modeling team member</h2>
+            </div>
+            <div class="prose">
+              <p>EcoCAR is an Advanced Vehicle Technology Competition where university teams research, design and build next-generation vehicle technology, then integrate and test it on a real vehicle. A new competition is starting, and I'm on the team for Year 1.</p>
+              <p>I joined the Propulsion Controls &amp; Modeling (PCM) sub-team after completing its development challenge. PCM builds Simulink models of the propulsion system and the control software that runs it, tested model-in-the-loop and hardware-in-the-loop before it runs on a real-time controller in the car.</p>
+            </div>
+          </div>
+          <dl class="kv">
+            <div><dt>Sub-team</dt><dd>Propulsion Controls &amp; Modeling (PCM)</dd></div>
+            <div><dt>How I got in</dt><dd>PCM development challenge: a <a href="#project-pcm">10-speed transmission controller</a> in Simulink and Stateflow</dd></div>
+            <div><dt>Focus this year</dt><dd>Propulsion modeling and controls in MATLAB, Simulink and Stateflow</dd></div>
+            <div><dt>Also completed</dt><dd>CAV development challenge in C++ (<a href="#project-antworld">AntWorld</a>)</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view page" id="experience" data-title="Experience">
+    <div class="wrap">
+      <header class="view-head">
+        <span class="label"><span class="pad" aria-hidden="true"></span>Experience</span>
+        <h1>Experience</h1>
+      </header>
+      <div class="page-body">
+        <ol class="timeline">
+          <li class="job">
+            <span class="when">May – Aug 2026</span>
+            <div class="what">
+              <h4>Operations Student</h4>
+              <span class="org">CRH, Ontario Redimix · Toronto Portlands Plant</span>
+              <ul class="ticks">
+                <li>Supported dispatch and loading of concrete mixer trucks at a high-volume ready-mix plant, keeping delivery schedules accurate and on time.</li>
+                <li>Ran quality control tests on concrete batches (slump, air content and cylinder sampling) to check them against mix design specifications.</li>
+                <li>Studied concrete mix designs and their material proportions to support batching accuracy.</li>
+              </ul>
+            </div>
+          </li>
+          <li class="job">
+            <span class="when">Jan – Apr 2026</span>
+            <div class="what">
+              <h4>Corporate Strategy Consultant</h4>
+              <span class="org">Lobo's Eatery · North York, ON</span>
+              <ul class="ticks">
+                <li>Identified and segmented 80+ corporations within 5 km and built the outreach: flyers, emails and sales proposals.</li>
+                <li>Built a corporate catering CRM, FAQ and order forms, and researched competitor pricing to recommend a catering model that could scale.</li>
+              </ul>
+            </div>
+          </li>
+          <li class="job">
+            <span class="when">Jun 2023 – Aug 2025</span>
+            <div class="what">
+              <h4>Sales Associate</h4>
+              <span class="org">Sobeys · Clark &amp; Hilda</span>
+              <ul class="ticks">
+                <li>Handled high-volume transactions accurately and de-escalated customer disputes.</li>
+                <li>Coordinated with the team to keep the store running smoothly at peak times.</li>
+              </ul>
+            </div>
+          </li>
+          <li class="job">
+            <span class="when">Aug 2021 – Jul 2023</span>
+            <div class="what">
+              <h4>Apprentice Electrician</h4>
+              <span class="org">SparkBusted Mobile</span>
+              <ul class="ticks">
+                <li>Installed and commissioned residential and commercial electrical systems, from high-voltage utility distribution to low-voltage lighting control.</li>
+                <li>Did circuit analysis and systematic fault-finding on wiring systems, following the Ontario Electrical Safety Code (OESC).</li>
+              </ul>
+            </div>
+          </li>
+        </ol>
+        <div class="subsection">
+          <h2>Clubs &amp; awards</h2>
+          <div class="clubs">
+          <div class="club">
+            <span class="meta">Engineering team</span>
+            <h4>McMaster EcoCAR</h4>
+            <p>Propulsion Controls &amp; Modeling sub-team since Oct 2026, Year 1 of the new competition.</p>
+          </div>
+          <div class="club">
+            <span class="meta">General Executive</span>
+            <h4>McMaster Poker Studies Club</h4>
+            <p>Executive team of a club built around poker strategy: probability, expected value and decisions with incomplete information.</p>
+          </div>
+          <div class="club">
+            <span class="meta">Member</span>
+            <h4>McMaster Iranian Student Association</h4>
+            <p>Part of McMaster's Iranian student community and its cultural events.</p>
+          </div>
+        </div>
+          <div class="awards">
+          <div class="award"><span><strong>Dean's Honour List</strong>, McMaster Faculty of Engineering</span><span class="meta">2025</span></div>
+          <div class="award"><span><strong>Calculus Award</strong> for the highest standing average, Thornhill Secondary School</span><span class="meta">2024</span></div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view page" id="skills" data-title="Skills">
+    <div class="wrap">
+      <header class="view-head">
+        <span class="label"><span class="pad" aria-hidden="true"></span>Skills</span>
+        <h1>Skills</h1>
+      </header>
+      <div class="page-body">
+        <div class="skills">
+          <div class="skill">
+            <h4>Programming</h4>
+            <ul class="tags"><li>C</li><li>C++</li><li>Python</li><li>MATLAB</li><li>Git</li><li>CMake</li></ul>
+          </div>
+          <div class="skill">
+            <h4>Embedded &amp; electrical</h4>
+            <ul class="tags"><li>Arduino</li><li>Character LCDs</li><li>Pushbutton &amp; buzzer I/O</li><li>Finite-state machines</li><li>Circuit analysis</li><li>Fault-finding</li><li>Wiring to OESC</li></ul>
+          </div>
+          <div class="skill">
+            <h4>Design &amp; fabrication</h4>
+            <ul class="tags"><li>Autodesk Inventor</li><li>AutoCAD</li><li>3D printing</li><li>Engineering drawings</li><li>Prototyping</li><li>Actuator integration</li></ul>
+          </div>
+          <div class="skill">
+            <h4>Analysis &amp; lab</h4>
+            <ul class="tags"><li>Ansys Granta EduPack</li><li>Excel</li><li>Data analysis</li><li>Experimental design</li><li>Rheological analysis</li><li>Concrete QC testing</li></ul>
+          </div>
+          <div class="skill">
+            <h4>Controls &amp; simulation</h4>
+            <ul class="tags"><li>Simulink</li><li>Stateflow</li><li>Requirements Toolbox</li><li>Simulink Test</li><li>Model-in-the-loop testing</li></ul>
+          </div>
+          <div class="skill">
+            <h4>Working style</h4>
+            <ul class="tags"><li>Team coordination</li><li>Technical writing</li><li>Leadership</li><li>Adaptability</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view page" id="about" data-title="About">
+    <div class="wrap">
+      <header class="view-head">
+        <span class="label"><span class="pad" aria-hidden="true"></span>About me</span>
+        <h1>About me</h1>
+      </header>
+      <div class="page-body">
+        <div class="about">
+          <div class="about-text">
+            <h2>Outside the lab</h2>
+            <p>I chose engineering because I like designing things and seeing them work in the real world. Outside class I stay active, spend time with friends and listen to a lot of music.</p>
+            <p>The photos are from night snowboarding with friends from my program and a visit to a farm, where I fed the sheep and goats.</p>
+            <span class="label">On repeat</span>
+            <ul class="artists">
+              <li>Phoebe Bridgers</li><li>Geese</li><li>Jane Remover</li><li>Frank Ocean</li>
+            </ul>
+            <p>I recently saw Phoebe Bridgers live, and I really enjoyed the show.</p>
+          </div>
+          <div class="duo life">
+            <figure class="photo">
+              <img src="assets/snowboarding.jpg" width="1400" height="1050" loading="lazy" alt="Five friends in helmets and goggles holding snowboards on a lit ski hill at night.">
+              <figcaption>Night snowboarding with friends from my program.</figcaption>
+            </figure>
+            <figure class="photo">
+              <img src="assets/farm.jpg" width="825" height="1100" loading="lazy" alt="Iliya leaning over a wire fence holding lettuce, a carrot and an apple out to a sheep and a young goat.">
+              <figcaption>Feeding the animals at a farm.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view page" id="contact" data-title="Contact">
+    <div class="wrap">
+      <header class="view-head">
+        <span class="label"><span class="pad" aria-hidden="true"></span>Contact</span>
+      </header>
+      <div class="page-body contact">
+        <h1 class="contact-title">Hiring a mechatronics intern for Summer 2027?</h1>
+        <p class="prose" style="margin:0">I'm available May to August 2027 for roles in embedded systems, controls, electromechanical design or automation. Email is the fastest way to reach me.</p>
+        <div class="email-row">
+          <span class="email" id="emailText">iliya.gh2006@gmail.com</span>
+          <button class="btn small" type="button" id="copyEmail">Copy email</button>
+          <a class="btn small" href="mailto:iliya.gh2006@gmail.com">Open mail app</a>
+        </div>
+        <div class="links">
+          <a class="btn" href="https://www.linkedin.com/in/iliya-ghamoushi/" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn" href="https://low-plywood-0a5.notion.site/Iliya-Ghamoushi-1713a01faf04802097a5e22f68d34625" target="_blank" rel="noopener">Notion portfolio</a>
+          <a class="btn primary" href="Iliya-Ghamoushi-Resume.pdf" target="_blank" rel="noopener" data-resume>Download resume</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap f-grid">
+    <div class="f-id">
+      <a class="brand" href="#home">Iliya Ghamoushi</a>
+      <p>B.Eng. Mechatronics &amp; Management, McMaster University. Open to Summer 2027 mechatronics internships, May to August.</p>
+      <div class="f-actions">
+        <a class="btn small primary" href="Iliya-Ghamoushi-Resume.pdf" target="_blank" rel="noopener" data-resume>Download resume</a>
+        <a class="btn small" href="#contact">Contact page</a>
+      </div>
+    </div>
+    <dl class="f-contact">
+      <div><dt>Email</dt><dd><span class="sel">iliya.gh2006@gmail.com</span> <button type="button" class="cb-copy" data-copy="iliya.gh2006@gmail.com" aria-label="Copy email address">Copy</button></dd></div>
+      <div><dt>LinkedIn</dt><dd><a href="https://www.linkedin.com/in/iliya-ghamoushi/" target="_blank" rel="noopener">linkedin.com/in/iliya-ghamoushi</a></dd></div>
+      <div><dt>Project write-ups</dt><dd><a href="https://low-plywood-0a5.notion.site/Iliya-Ghamoushi-1713a01faf04802097a5e22f68d34625" target="_blank" rel="noopener">Notion portfolio</a></dd></div>
+      <div><dt>Based in</dt><dd>Hamilton &amp; Toronto, ON</dd></div>
+    </dl>
+  </div>
+  <div class="wrap f-base">
+    <p>© 2026 Iliya Ghamoushi</p>
+    <p class="mono">Mechatronics · Controls · Embedded</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(() => {
+  /* ---------- small helpers ---------- */
+  const $ = (s) => document.querySelector(s);
+  const toastEl = $('#toast');
+  let toastTimer;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toastEl.hidden = true; }, 2600);
+  }
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  };
+
+  /* ---------- copy email ---------- */
+  $('#copyEmail').addEventListener('click', (e) => {
+    const btn = e.currentTarget;
+    const text = $('#emailText').textContent.trim();
+    const done = () => { btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = 'Copy email'; }, 2000); };
+    const fallback = () => {
+      const r = document.createRange(); r.selectNodeContents($('#emailText'));
+      const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      toast('Email selected. Press Ctrl+C or Cmd+C to copy.');
+    };
+    try {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } catch (err) { fallback(); }
+  });
+
+  /* ---------- copy buttons in the contact bar and footer ---------- */
+  document.querySelectorAll('[data-copy]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const text = btn.dataset.copy, label = btn.textContent;
+      const done = () => { btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = label; }, 2000); };
+      const fail = () => toast('Copying is blocked here. The address is ' + text + '.');
+      try { navigator.clipboard.writeText(text).then(done, fail); } catch (err) { fail(); }
+    });
+  });
+
+  /* ---------- resume download ---------- */
+  let downloads = null, resumeBlob = null;
+  const RESUME = 'Iliya-Ghamoushi-Resume.pdf';
+  if (window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('downloads').then((d) => {
+      downloads = d;
+      if (d) fetch(RESUME).then((r) => r.ok ? r.blob() : null).then((b) => { resumeBlob = b; }).catch(() => {});
+    }).catch(() => {});
+  }
+  document.querySelectorAll('[data-resume]').forEach((a) => {
+    a.addEventListener('click', async (e) => {
+      if (!downloads) return; /* outside the viewer: the link opens the PDF */
+      e.preventDefault();
+      try {
+        const blob = resumeBlob || await fetch(RESUME).then((r) => r.blob());
+        await downloads.save({ filename: RESUME, data: blob });
+      } catch (err) {
+        const code = err && err.code;
+        if (code === 'declined') return;
+        if (code === 'rate_limited') { toast('A save prompt is already open.'); return; }
+        toast('The resume could not be saved here. Ask me for a copy by email.');
+      }
+    });
+  });
+
+  /* ---------- 16x2 LCD ---------- */
+  const COLS = 16, ROWS = 2;
+  const F = {
+    'A':[14,17,17,17,31,17,17],'B':[30,17,17,30,17,17,30],'C':[14,17,16,16,16,17,14],'D':[28,18,17,17,17,18,28],
+    'E':[31,16,16,30,16,16,31],'F':[31,16,16,30,16,16,16],'G':[14,17,16,23,17,17,15],'H':[17,17,17,31,17,17,17],
+    'I':[14,4,4,4,4,4,14],'J':[7,2,2,2,2,18,12],'K':[17,18,20,24,20,18,17],'L':[16,16,16,16,16,16,31],
+    'M':[17,27,21,21,17,17,17],'N':[17,17,25,21,19,17,17],'O':[14,17,17,17,17,17,14],'P':[30,17,17,30,16,16,16],
+    'Q':[14,17,17,17,21,18,13],'R':[30,17,17,30,20,18,17],'S':[15,16,16,14,1,1,30],'T':[31,4,4,4,4,4,4],
+    'U':[17,17,17,17,17,17,14],'V':[17,17,17,17,17,10,4],'W':[17,17,17,21,21,21,10],'X':[17,17,10,4,10,17,17],
+    'Y':[17,17,17,10,4,4,4],'Z':[31,1,2,4,8,16,31],
+    '0':[14,17,19,21,25,17,14],'1':[4,12,4,4,4,4,14],'2':[14,17,1,2,4,8,31],'3':[31,2,4,2,1,17,14],
+    '4':[2,6,10,18,31,2,2],'5':[31,16,30,1,1,17,14],'6':[6,8,16,30,17,17,14],'7':[31,1,2,4,8,8,8],
+    '8':[14,17,17,14,17,17,14],'9':[14,17,17,15,1,2,12],
+    ':':[0,12,12,0,12,12,0],'-':[0,0,0,31,0,0,0],'.':[0,0,0,0,0,12,12],'!':[4,4,4,4,4,0,4],' ':[0,0,0,0,0,0,0]
+  };
+  /* custom 5x8 characters, like the CGRAM sprites on the real LCD */
+  const CAT = [[17,31,21,31,14,31,10,0],[17,31,21,31,14,31,17,0]];
+  const STAR = [0,4,4,31,14,10,17,0];
+  const TRAIL = [[0,31,0,31,0,31,0,0],[31,0,31,0,31,0,0,0]];
+
+  const buf = Array.from({ length: ROWS }, () => Array(COLS).fill(null));
+  const clear = () => buf.forEach((r) => r.fill(null));
+  const put = (r, c, g) => { if (c >= 0 && c < COLS) buf[r][c] = g; };
+  const text = (r, c, s) => { for (let i = 0; i < s.length; i++) { const g = F[s[i]]; put(r, c + i, g ? g.concat(0) : null); } };
+
+  const canvas = $('#lcd');
+  const ctx = canvas.getContext('2d');
+  const tok = getComputedStyle(document.documentElement);
+  const C = {
+    hi: tok.getPropertyValue('--lcd-hi').trim() || '#3c63ff',
+    lo: tok.getPropertyValue('--lcd-lo').trim() || '#1b3bd1',
+    on: tok.getPropertyValue('--lcd-on').trim() || '#eef3ff',
+    off: tok.getPropertyValue('--lcd-off').trim() || 'rgba(255,255,255,.085)',
+    glow: tok.getPropertyValue('--lcd-glow').trim() || 'rgba(205,222,255,.75)'
+  };
+  const PW = COLS * 6 - 1 + 6, PH = ROWS * 9 - 1 + 6; /* 101 x 23 pixel pitches */
+  let pitch = 1;
+
+  function draw() {
+    const W = canvas.width, H = canvas.height;
+    if (!W || !H) return;
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, C.hi); g.addColorStop(1, C.lo);
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    const s = pitch * 0.84;
+    const lit = [];
+    ctx.fillStyle = C.off;
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      const gl = buf[r][c];
+      const x0 = (3 + c * 6) * pitch, y0 = (3 + r * 9) * pitch;
+      for (let y = 0; y < 8; y++) {
+        const bits = gl ? gl[y] : 0;
+        for (let x = 0; x < 5; x++) {
+          const px = x0 + x * pitch, py = y0 + y * pitch;
+          if (bits & (16 >> x)) lit.push(px, py); else ctx.fillRect(px, py, s, s);
+        }
+      }
+    }
+    ctx.fillStyle = C.on;
+    ctx.shadowColor = C.glow;
+    ctx.shadowBlur = pitch * 0.9;
+    for (let i = 0; i < lit.length; i += 2) ctx.fillRect(lit[i], lit[i + 1], s, s);
+    ctx.shadowBlur = 0;
+  }
+  function resize() {
+    const w = canvas.clientWidth;
+    if (!w) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(w * PH / PW * dpr);
+    pitch = canvas.width / PW;
+    draw();
+  }
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas);
+  window.addEventListener('resize', resize);
+
+  /* ---------- sound (piezo-style square waves) ---------- */
+  let actx = null, soundOn = false;
+  const soundBtn = $('#soundBtn');
+  function ensureAudio() {
+    if (!soundOn) return;
+    if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { actx = null; } }
+    if (actx && actx.state === 'suspended') actx.resume().catch(() => {});
+  }
+  function tone(f0, f1, dur, vol) {
+    if (!soundOn || !actx) return;
+    const t0 = actx.currentTime, o = actx.createOscillator(), g = actx.createGain();
+    o.type = 'square';
+    o.frequency.setValueAtTime(f0, t0);
+    if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+    g.gain.setValueAtTime(vol, t0);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(actx.destination);
+    o.start(t0); o.stop(t0 + dur + 0.02);
+  }
+  const sfx = {
+    tick: () => tone(1760, 1760, 0.03, 0.025),
+    jump: () => tone(880, 1480, 0.08, 0.035),
+    crash: () => tone(660, 90, 0.45, 0.05)
+  };
+  soundBtn.addEventListener('click', () => {
+    soundOn = !soundOn;
+    soundBtn.setAttribute('aria-pressed', String(soundOn));
+    soundBtn.textContent = soundOn ? 'Sound: on' : 'Sound: off';
+    ensureAudio();
+    if (soundOn) sfx.tick();
+  });
+
+  /* ---------- game: same constants as the hardware version ---------- */
+  const TICK_MS = 50, V0 = 0.35, VMAX = 1.40, RAMP = 0.0035, JUMP = 6, MAX_OBS = 3, PCOL = 3;
+  let mode = 'attract', obs = [], acc = 0, speed = V0, air = 0, cool = 12, score = 0, t = 0, beep = 0;
+  let best = parseInt(store.get('ncr-best') || '0', 10) || 0;
+  let loop = null, attractLoop = null, idleTimer = null, page = 0, overAt = 0;
+
+  function label(s) { canvas.setAttribute('aria-label', '16 by 2 character LCD showing ' + s + '. Press Space or tap to play Nyan Cat Runner.'); }
+
+  function showAttract() {
+    clear();
+    if (page === 0) { text(0, 0, 'PRESS START'); text(1, 0, 'BEST:' + best); }
+    else { text(0, 0, 'NYAN CAT RUNNER'); put(0, 15, CAT[0]); text(1, 0, 'MECHTRON 2TA4'); }
+    draw();
+  }
+  function attract() {
+    mode = 'attract';
+    clearInterval(loop); clearInterval(attractLoop); clearTimeout(idleTimer);
+    page = 0; showAttract(); label('PRESS START, BEST ' + best);
+    attractLoop = setInterval(() => { page ^= 1; showAttract(); }, 2600);
+  }
+  function start() {
+    mode = 'play';
+    obs = []; acc = 0; speed = V0; air = 0; cool = 12; score = 0; t = 0; beep = 0;
+    clearInterval(attractLoop); clearInterval(loop); clearTimeout(idleTimer);
+    loop = setInterval(tick, TICK_MS);
+    label('the game in progress');
+    render();
+  }
+  function crash() {
+    mode = 'over';
+    clearInterval(loop);
+    if (score > best) { best = score; store.set('ncr-best', String(best)); }
+    sfx.crash();
+    clear(); text(0, 0, 'GAME OVER'); text(1, 0, 'S:' + score + ' B:' + best); draw();
+    label('GAME OVER, score ' + score + ', best ' + best);
+    overAt = performance.now();
+    idleTimer = setTimeout(attract, 7000);
+  }
+  const hit = () => obs.some((o) => o.c === PCOL);
+  function tick() {
+    t++;
+    speed = Math.min(VMAX, V0 + RAMP * t);
+    acc += speed;
+    const steps = Math.floor(acc);
+    acc -= steps;
+    for (let s = 0; s < steps; s++) {
+      for (const o of obs) o.c--;
+      if (air === 0 && hit()) return crash();
+      obs = obs.filter((o) => o.c >= 0);
+      score++;
+    }
+    if (air > 0) air--;
+    if (air === 0 && hit()) return crash();
+    if (--cool <= 0 && obs.length < MAX_OBS) {
+      obs.push({ c: COLS });
+      cool = Math.ceil(JUMP + 2 + 1 / speed) + Math.floor(Math.random() * 12);
+    }
+    beep += speed / V0;
+    if (beep >= 10) { beep = 0; sfx.tick(); }
+    render();
+  }
+  function render() {
+    clear();
+    const row = air > 0 ? 0 : 1;
+    const f = Math.floor(t / 3) % 2;
+    put(row, PCOL - 2, TRAIL[f]);
+    put(row, PCOL - 1, TRAIL[1 - f]);
+    put(row, PCOL, CAT[air > 0 ? 0 : f]);
+    for (const o of obs) put(1, o.c, STAR);
+    const sc = String(score);
+    text(0, COLS - sc.length, sc);
+    draw();
+  }
+  function press() {
+    ensureAudio();
+    if (mode === 'attract') start();
+    else if (mode === 'play') { if (air === 0) { air = JUMP; sfx.jump(); render(); } }
+    else if (mode === 'over' && performance.now() - overAt > 500) start();
+  }
+
+  /* inputs: LCD tap, pushbutton, Space / Up / Enter while either is focused */
+  const jumpBtn = $('#jumpBtn');
+  let lastPress = 0;
+  const fire = () => { lastPress = performance.now(); press(); };
+  canvas.addEventListener('pointerdown', (e) => { e.preventDefault(); canvas.focus({ preventScroll: true }); fire(); });
+  jumpBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); jumpBtn.classList.add('down'); fire(); });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => jumpBtn.addEventListener(ev, () => jumpBtn.classList.remove('down')));
+  jumpBtn.addEventListener('click', (e) => { if (performance.now() - lastPress > 150) fire(); });
+  const keyJump = (e) => {
+    if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'Enter') {
+      e.preventDefault();
+      if (!e.repeat) fire();
+    }
+  };
+  canvas.addEventListener('keydown', keyJump);
+  jumpBtn.addEventListener('keydown', keyJump);
+  document.addEventListener('visibilitychange', () => { if (document.hidden && mode === 'play') crash(); });
+
+  resize();
+  attract();
+
+  /* ---------- click-to-view pages ---------- */
+  const views = Array.from(document.querySelectorAll('.view'));
+  const byId = new Map(views.map((v) => [v.id, v]));
+  const alias = { top: 'home', main: 'home', work: 'projects', pcm: 'project-pcm', antworld: 'project-antworld', clubs: 'experience' };
+  const tabLinks = Array.from(document.querySelectorAll('.tabs a'));
+  const tabStrip = document.querySelector('.tabs');
+  const resolve = (id) => byId.has(id) ? id : (alias[id] && byId.has(alias[id]) ? alias[id] : 'home');
+
+  function show(raw, initial) {
+    const id = resolve(raw);
+    const view = byId.get(id);
+    views.forEach((v) => { v.hidden = v !== view; });
+    const section = id.indexOf('project-') === 0 ? 'projects' : id;
+    let current = null;
+    tabLinks.forEach((a) => {
+      if (a.dataset.view === section) { a.setAttribute('aria-current', 'page'); current = a; }
+      else a.removeAttribute('aria-current');
+    });
+    if (current && tabStrip.scrollWidth > tabStrip.clientWidth) {
+      tabStrip.scrollLeft = Math.max(0, current.offsetLeft - tabStrip.clientWidth / 2 + current.offsetWidth / 2);
+    }
+    document.title = id === 'home' ? 'Iliya Ghamoushi' : (view.dataset.title || 'Page') + ' · Iliya Ghamoushi';
+    if (id !== 'home' && mode === 'play') attract();
+    window.scrollTo(0, 0);
+    if (!initial) {
+      const h = view.querySelector('h1, h2');
+      if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const id = a.getAttribute('href').slice(1);
+    if (!id) return;
+    e.preventDefault();
+    if (location.hash.slice(1) !== id) { try { history.pushState(null, '', '#' + id); } catch (err) {} }
+    show(id);
+  });
+  try { history.scrollRestoration = 'manual'; } catch (err) {}
+  window.addEventListener('popstate', () => show(location.hash.slice(1)));
+  window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+  show(location.hash.slice(1), true);
+})();
+</script>
